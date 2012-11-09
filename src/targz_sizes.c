@@ -36,15 +36,10 @@ tarfilesize_t decode_octal(char* size) {
 
 int main(int argc, char** argv) {
     // argument parsing
-    if (argc != 2) {
-        fprintf(stderr, "Usage:\n   %s file.tar.gz\n", argv[0]);
+    if (argc != 1) {
+        fprintf(stderr, "Usage:\n   %s <file.tar.gz\n", argv[0]);
         return 1;
     }
-
-    char* filename = argv[1];
-
-    // opening files and setting up counters
-    FILE* file = fopen(filename, "rb");  // TODO: error checking
 
     unsigned char compressed[COMPRESSED_BUFFER];
     unsigned char decompressed[TAR_BLOCK_SIZE];
@@ -69,7 +64,7 @@ int main(int argc, char** argv) {
         if (gzip_stream.avail_in == 0) {
             // TODO: error checking
             // TODO: end of file condition
-            size_t bytes = fread(&compressed, 1, COMPRESSED_BUFFER, file);
+            size_t bytes = fread(&compressed, 1, COMPRESSED_BUFFER, stdin);
             gzip_stream.next_in = compressed;
             gzip_stream.avail_in = bytes;
         }
