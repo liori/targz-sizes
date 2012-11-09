@@ -19,3 +19,6 @@ src/.deps
 src/Makefile
 src/Makefile.in
 
+build-aux
+src/targz_sizes
+src/targz_sizes.o
