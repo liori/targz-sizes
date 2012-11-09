@@ -8,7 +8,9 @@
  ============================================================================
  */
 
+#include <stdint.h>
 #include <stdio.h>
+
 #include <zlib.h>
 
 #define COMPRESSED_BUFFER 102400
@@ -20,8 +22,11 @@ struct tarheader {
     char otherjunk[512-100-24-12];
 };
 
-long long decode_octal(char* size) {
-    long long value = 0;
+// technically 36 bits should be enough, but there is no uint_least36_t type
+typedef uint_least64_t tarfilesize_t;
+
+tarfilesize_t decode_octal(char* size) {
+    tarfilesize_t value = 0;
     for (int i=0; i<11; i++) {
         value = value*8 + (size[i]&7);
     }
@@ -91,10 +96,8 @@ int main(int argc, char** argv) {
             		decompressed.filename, decompressed.size,
             		gzip_stream.total_in);
 
-                long long size = decode_octal(decompressed.size);
+                tarfilesize_t size = decode_octal(decompressed.size);
                 skip_blocks = ((size + 511) / 512);
-
-                //std::cout << "Blocks to skip: " << skip_blocks << " (from: " << size << ")" << endl;
             }
 
             gzip_stream.next_out = (unsigned char*) &decompressed;
