@@ -36,8 +36,7 @@ tarfilesize_t decode_octal(char* size) {
 int main(int argc, char** argv) {
     // argument parsing
     if (argc != 2) {
-    	// TODO: put this to stderr
-    	printf("Usage:\n   %s file.tar.gz\n", argv[0]);
+        fprintf(stderr, "Usage:\n   %s file.tar.gz\n", argv[0]);
         return 1;
     }
 
