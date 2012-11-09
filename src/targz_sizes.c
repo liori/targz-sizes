@@ -98,10 +98,14 @@ int main(int argc, char** argv) {
                 gzip_stream.next_out = (unsigned char*) &decompressed;
                 gzip_stream.avail_out = sizeof(decompressed);
             } else {
+                // tar uses blocks with null filename to mark end of stream.
+                // ignore them.
                 // TODO: handle long file names.
-                printf("%lld %s\n",
-                    gzip_stream.total_in - start_of_last_header,
-                    header.filename);
+                if (header.filename[0] != 0) {
+                    printf("%lld %s\n",
+                        gzip_stream.total_in - start_of_last_header,
+                        header.filename);
+                }
 
                 start_of_last_header = gzip_stream.total_in;
 
