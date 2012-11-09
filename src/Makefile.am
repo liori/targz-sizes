@@ -1,2 +1,2 @@
 bin_PROGRAMS=targz_sizes
-targz_sizes_SOURCES=targz_sizes.cpp
+targz_sizes_SOURCES=targz_sizes.c
