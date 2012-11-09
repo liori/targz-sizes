@@ -1,3 +1,2 @@
-bin_PROGRAMS=a.out
-a_out_SOURCES=targz_sizes.cpp
-
+bin_PROGRAMS=targz_sizes
+targz_sizes_SOURCES=targz_sizes.cpp
