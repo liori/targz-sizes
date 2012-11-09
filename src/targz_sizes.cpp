@@ -11,7 +11,6 @@
 #include <iostream>
 #include <cstdio>
 #include <zlib.h>
-#include <boost/lexical_cast.hpp>
 
 using namespace std;
 
