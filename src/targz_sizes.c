@@ -81,7 +81,6 @@ int main(int argc, char** argv) {
 
         // if output buffer is not full, try to decompress more data
         if (gzip_stream.avail_out > 0) {
-            // TODO: error checking
             int cond = inflate(&gzip_stream, Z_NO_FLUSH);
             if (cond == Z_STREAM_END) {
                 // this is the last iteration of the loop
