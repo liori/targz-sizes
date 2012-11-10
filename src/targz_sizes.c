@@ -59,12 +59,21 @@ int main(int argc, char** argv) {
 
     // state machine
     int skip_blocks = 0;
-    while(1) {
+    int return_code = 0;
+    int more_data = 1;
+    while(more_data) {
         // if stream's avail_in is empty, we need more data.
         if (gzip_stream.avail_in == 0) {
-            // TODO: error checking
-            // TODO: end of file condition
             size_t bytes = fread(&compressed, 1, COMPRESSED_BUFFER, stdin);
+            if (bytes == 0 && ferror(stdin)) {
+                perror("stdin");
+                return_code = 1;
+                break;
+            } else if (bytes == 0 && feof(stdin)) {
+                fprintf(stderr, "stdin: premature end of file\n");
+                return_code = 1;
+                break;
+            }
             gzip_stream.next_in = compressed;
             gzip_stream.avail_in = bytes;
         }
@@ -74,8 +83,14 @@ int main(int argc, char** argv) {
         if (gzip_stream.avail_out > 0) {
             // TODO: error checking
             int cond = inflate(&gzip_stream, Z_NO_FLUSH);
-            if (cond == 1)
-                return 0;
+            if (cond == Z_STREAM_END) {
+                // this is the last iteration of the loop
+                more_data = 0;
+            } else if (cond < 0) {
+                fprintf(stderr, "stdin: %s\n", gzip_stream.msg);
+                return_code = 1;
+                break;
+            }
         }
 
         // if output buffer is full, perform an action.
@@ -109,4 +124,6 @@ int main(int argc, char** argv) {
             }
         }
     }
+
+    return return_code;
 }
