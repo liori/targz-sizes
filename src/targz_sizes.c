@@ -125,5 +125,8 @@ int main(int argc, char** argv) {
         }
     }
 
+    // free resources and make valgrind happy
+    inflateEnd(&gzip_stream);
+
     return return_code;
 }
