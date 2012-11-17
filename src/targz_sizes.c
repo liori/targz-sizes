@@ -111,6 +111,10 @@ int main(int argc, char** argv) {
                 // ignore them.
                 // TODO: handle long file names.
                 if (header.filename[0] != 0) {
+                    // to ensure the filename is 0-terminated somewhere (note:
+                    // we're not handling longer filenames than those which
+                    // fit the original tar limits).
+                    header.somejunk[0] = 0;
                     printf("%lld %s\n",
                         gzip_stream.total_in - start_of_last_header,
                         header.filename);
