@@ -1,1 +1,11 @@
-<Place your desired license here.>
+This piece of code is so simple (currently 130 lines of C code total with
+comments and other stuff), that anybody with some programming skills could write
+it from scratch. However, releasing code without a license would technically
+forbid anyone from looking at it at all, and this is not what I mean.
+
+I, Tomasz Melcer, place targz_sizes under GPL v3 license. A copy of the text of
+this license can be easily found on a dedicated web site [1]. However, I am not
+a religious follower of the church of FSF, and if you have any nice arguments
+why should I relicense it or give a less strict license to you, just contact me.
+
+ [1] http://gplv3.fsf.org/

@@ -1,1 +1,70 @@
-Sample readme file for targz_sizes project.
+targz_sizes
+===========
+
+targz_sizes is a small and simple tool to find out how much space do specific
+files take inside a .tar.gz file, after compression. It does that by reading and
+decompressing the archive file in memory, then dumping raw information on the
+standard output. Archive file is processed in small chunks, so that memory
+usage is minimal.
+
+This program has been written to check which directories take the most space in
+my `duplicity` backups. This is different than checking space usage on a live
+file system because of two factors: compression (text files often take very
+little space in archives compared to live file system) and incremental backups
+(files that change often are stored multiple times in backups). targz_sizes
+performs only basic data gathering, you will need something to provide proper
+statistics though.
+
+Usage
+-----
+
+No options are implemented. The archive file is taken on standard input,
+file sizes are printed on standard output. E.g.:
+
+    targz_sizes <my_archive.tar.gz >file_sizes.txt
+
+Output consists of lines, where each line shows size in bytes and name of file,
+e.g.:
+
+	145 targz_sizes-1.0/
+	63 targz_sizes-1.0/AUTHORS
+	3525 targz_sizes-1.0/missing
+	42103 targz_sizes-1.0/configure
+	93 targz_sizes-1.0/NEWS
+	12936 targz_sizes-1.0/config.guess
+	10025 targz_sizes-1.0/config.sub
+
+Note that directory entries also take up space in the archive! Also note that
+technically a file can be encoded by any number of bits, not necessarily being
+round number of bytes. In such cases, amount of space shown in the output is
+approximate.
+
+Known problems
+--------------
+
+To compile you need to pass `--with-zlib` to ./configure. `zlib` is required,
+even if the configure script goes well without this switch. E.g.:
+
+    ./configure --with-zlib
+
+Ustar-formatted file sizes are not supported, the output will be garbage. Ustar
+format allows storing files bigger than 8GB in tar archives. GNU tar does not
+use this format unless it is necessary, so if you used GNU tar and you know
+there are no files bigger than 8GB, you're safe.
+
+Standard input is not reopened in binary mode, as technically there is no way
+to perform this operation with standard C primitives. This will be a problem on
+platforms that by default provide standard input as a text stream (e.g.
+Windows). In such cases, the output will be garbage.
+
+The above problems should be easily fixable. You are free to fork the project
+if you want to fix them.
+
+Archive file names are not re-encoded to current locale. You can use `iconv`
+for that.
+
+Archive file names are truncated to 100 characters (the limit for original tar
+specification). There are format extensions which can cope with longer names,
+but those are not supported by targz_sizes. The output will contain the names
+as they appear in the 100-byte field in the header, most probably simply
+truncated.

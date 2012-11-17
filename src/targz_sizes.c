@@ -3,7 +3,7 @@
  Name        : targz_sizes.c
  Author      : Tomasz Melcer
  Version     :
- Copyright   : GPL v3
+ License     : GPL v3
  Description : Compute compressed sizes of individual files in a .tar.gz file
  ============================================================================
  */
