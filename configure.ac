@@ -12,6 +12,9 @@ AM_INIT_AUTOMAKE()
 AC_PROG_CC
 AX_CHECK_ZLIB
 
-AC_CONFIG_FILES(Makefile src/Makefile)
+AC_CONFIG_FILES( \
+	Makefile \
+	src/Makefile \
+	test/Makefile )
 AC_OUTPUT
 

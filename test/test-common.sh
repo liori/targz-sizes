@@ -1,0 +1,48 @@
+#!/bin/sh
+# vim: ts=4 sw=4 ts
+
+test_id=$(echo $0 | sed -e 's/^[^a-z]*//' | sed -e 's/.sh$//')
+test_dir="${test_id}-testdir"
+targz_sizes=${top_srcdir}/src/targz_sizes
+
+prepTestDir () {
+
+	rm -rf ${test_dir}
+	mkdir ${test_dir}
+
+}
+
+runTest () {
+
+    # run the test
+    echo "runTest(), run command: ${LOG_COMPILER} ${LOG_FLAGS} ${TEST_COMMAND} < ${test_dir}/input.tgz > ${test_dir}/rawout 2> ${test_dir}/rawerr"
+    ${LOG_COMPILER} ${LOG_FLAGS} ${TEST_COMMAND} < ${test_dir}/input.tgz 1> ${test_dir}/rawout 2> ${test_dir}/rawerr 
+    command_result=$?
+	cat ${test_dir}/rawerr ${test_dir}/rawout
+    echo "runTest(), command_result=$command_result"
+    if [ "$command_result" != "0" ] ; then
+        echo "runTest(), exiting"
+        exit $command_result
+    fi
+	cp ${test_dir}/rawout ${test_dir}/output
+}
+
+checkFilenames () {
+
+    echo "checkFilenames(), entered, test_dir=$test_dir"
+
+    # create expected result
+    tar tzf ${test_dir}/input.tgz > ${test_dir}/expout
+
+    echo "checkFilenames(), run diff: diff ${test_dir}/output ${test_dir}/expout"
+    diff ${test_dir}/output ${test_dir}/expout
+    diff_result=$?
+    echo "checkFilenames(), diff_result=$diff_result"
+
+    if [ "$diff_result" != "0" ] ; then
+        echo "checkFilenames(), exiting"
+        exit $diff_result
+    fi
+}
+
+

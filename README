@@ -15,6 +15,25 @@ little space in archives compared to live file system) and incremental backups
 performs only basic data gathering, you will need something to provide proper
 statistics though.
 
+Install
+-------
+
+    targz_sizes uses autotools to build on linux. Here is the four-step build
+    procedure.
+
+    1.  autoreconf -i
+    2.  ./configure
+    3.  make
+    4.  make install
+
+Test
+----
+
+    targz_sizes can be unit tested using a series of automated tests, executed
+    as follows
+
+    1. make check
+
 Usage
 -----
 
