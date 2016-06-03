@@ -70,17 +70,19 @@ int main(int argc, char** argv) {
     int c;
 
     int verbosity=0;
+    int separator='\n';
 
     while (1) {
         static struct option long_options[] = {
             {"log-level", required_argument, 0, 'v'},
+            {"null", no_argument, 0, 'Z'},
             {0, 0, 0, 0}
         };
         // getopt_long stores the option index here
         int option_index = 0;
 
         c = getopt_long (
-            argc, argv, "v:",
+            argc, argv, "Zv:",
             long_options, &option_index
         );
 
@@ -96,6 +98,11 @@ int main(int argc, char** argv) {
             // it is not.
             LOG_ERROR(verbosity, "coding error, getopt_long() should not "
                     "return '0' based on expected long_options input" );
+            break;
+
+            case 'Z':
+            separator='\0';
+            LOG_INFO(verbosity, "null separator enabled" );
             break;
 
             case 'v':
@@ -187,9 +194,9 @@ int main(int argc, char** argv) {
                     // we're not handling longer filenames than those which
                     // fit the original tar limits).
                     header.somejunk[0] = 0;
-                    printf("%lld %s\n",
+                    printf("%lld %s%c",
                         gzip_stream.total_in - start_of_last_header,
-                        header.filename);
+                        header.filename, separator);
                 }
 
                 start_of_last_header = gzip_stream.total_in;
