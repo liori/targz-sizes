@@ -34,6 +34,16 @@ Test
 
     1. make check
 
+Valgrind
+--------
+
+    targz_sizes unit tests can be analysed with Valgrind, if Valgrind is
+    installed in your environment, as follows
+
+    1. make check-valgrind
+
+    For more information, see the documentation for ax_valgrind_check.m4.
+
 Usage
 -----
 
