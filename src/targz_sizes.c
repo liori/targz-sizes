@@ -1,4 +1,5 @@
 /*
+ vim: ts=4 sw=4 et
  ============================================================================
  Name        : targz_sizes.c
  Author      : Tomasz Melcer
@@ -10,11 +11,38 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <getopt.h>
 
 #include <zlib.h>
 
 #define COMPRESSED_BUFFER 102400
 #define TAR_BLOCK_SIZE 512
+
+#ifndef max
+    #define max( a, b ) ( ((a) > (b)) ? (a) : (b) )
+#endif
+
+#ifndef min
+    #define min( a, b ) ( ((a) < (b)) ? (a) : (b) )
+#endif
+
+char* arg0;
+#define LOG_INIT(A) arg0=A
+#define LOG_MESSAGE(T,N,L,M, ...) \
+    if ( L >= T ) { \
+        if ( L >= 3 ) \
+            fprintf(stderr, "[%s] (%s:%d) " M "\n", N, \
+                    __FILE__, __LINE__, ##__VA_ARGS__ ) ; \
+        else \
+            fprintf(stderr, "%s: " M "\n", arg0, ##__VA_ARGS__ ) ; \
+    }
+
+#define LOG_ERROR(L,M, ...) LOG_MESSAGE(1,"error",L,M,##__VA_ARGS__)
+#define LOG_WARN(L,M, ...) LOG_MESSAGE(2,"warn",L,M,##__VA_ARGS__)
+#define LOG_INFO(L,M, ...) LOG_MESSAGE(3,"info",L,M,##__VA_ARGS__)
+#define LOG_DEBUG(L,M, ...) LOG_MESSAGE(4,"debug",L,M,##__VA_ARGS__)
+#define LOG_TEST(L,M, ...) LOG_MESSAGE(5,"test",L,M,##__VA_ARGS__)
 
 struct tarheader {
     char filename[100];
@@ -36,9 +64,53 @@ tarfilesize_t decode_octal(char* size) {
 
 int main(int argc, char** argv) {
     // argument parsing
-    if (argc != 1) {
-        fprintf(stderr, "Usage:\n   %s <file.tar.gz\n", argv[0]);
-        return 1;
+
+    LOG_INIT(argv[0]);
+
+    int c;
+
+    int verbosity=0;
+
+    while (1) {
+        static struct option long_options[] = {
+            {"log-level", required_argument, 0, 'v'},
+            {0, 0, 0, 0}
+        };
+        // getopt_long stores the option index here
+        int option_index = 0;
+
+        c = getopt_long (
+            argc, argv, "v:",
+            long_options, &option_index
+        );
+
+        // detect the end of the options
+        if (c == -1)
+            break;
+
+        switch (c) {
+            case 0:
+            // coding error, this case should only be found
+            // if the long_options struct is set up with flag
+            // pointers, which in the current implementation
+            // it is not.
+            LOG_ERROR(verbosity, "coding error, getopt_long() should not "
+                    "return '0' based on expected long_options input" );
+            break;
+
+            case 'v':
+            verbosity=max(0, min(5, atoi(optarg)));
+            LOG_INFO(verbosity, "logging level %d enabled", verbosity );
+            break;
+
+            case '?':
+            // getopt_long already printed an error message
+            exit(EXIT_FAILURE);
+            break;
+
+            default:
+            abort ();
+        }
     }
 
     unsigned char compressed[COMPRESSED_BUFFER];

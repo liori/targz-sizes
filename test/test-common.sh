@@ -46,3 +46,19 @@ checkFilenames () {
 }
 
 
+checkInErrOut () {
+
+    echo "checkInErrOut(), entered, test_id=$test_dir"
+
+    echo "checkInErrOut(), run egrep: egrep \"$1\" ${test_dir}/rawerr"
+    egrep "$1" ${test_dir}/rawerr
+	egrep_result=$?
+
+    echo "checkInErrOut(), egrep_result=$egrep_result"
+
+    if [ "$egrep_result" != "0" ] ; then
+        echo "checkInErrOut(), exiting"
+        exit $egrep_result
+    fi
+}
+
