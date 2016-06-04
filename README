@@ -47,8 +47,8 @@ Valgrind
 Usage
 -----
 
-No options are implemented. The archive file is taken on standard input,
-file sizes are printed on standard output. E.g.:
+The archive file is taken on standard input, file sizes are printed on standard
+output. E.g.:
 
     targz_sizes <my_archive.tar.gz >file_sizes.txt
 
@@ -67,6 +67,17 @@ Note that directory entries also take up space in the archive! Also note that
 technically a file can be encoded by any number of bits, not necessarily being
 round number of bytes. In such cases, amount of space shown in the output is
 approximate.
+
+Options
+-------
+
+    -v, --log-level LEVEL
+        level of log output from 0 (none; default) to 4 (debug), with level 5
+	(test), changing program behaviour to support testing.
+
+    -Z, --null
+        names of files in output, are null-terminated.  By default, names of
+        files are newline terminated.
 
 Known problems
 --------------
@@ -91,9 +102,3 @@ if you want to fix them.
 
 Archive file names are not re-encoded to current locale. You can use `iconv`
 for that.
-
-Archive file names are truncated to 100 characters (the limit for original tar
-specification). There are format extensions which can cope with longer names,
-but those are not supported by targz_sizes. The output will contain the names
-as they appear in the 100-byte field in the header, most probably simply
-truncated.

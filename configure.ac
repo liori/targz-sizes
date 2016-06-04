@@ -25,6 +25,8 @@ AM_EXTRA_RECURSIVE_TARGETS( \
 AC_CONFIG_FILES( \
 	Makefile \
 	src/Makefile \
+	test/basic/Makefile \
+	test/long-filenames/Makefile \
 	test/Makefile )
 AC_OUTPUT
 
