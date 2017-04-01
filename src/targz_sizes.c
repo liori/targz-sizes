@@ -28,7 +28,7 @@ static inline int min(int a, int b) {
 }
 
 char* arg0;
-#define LOG_INIT(A) arg0=A
+#define LOG_INIT(A) arg0 = A
 #define LOG_MESSAGE(T,N,L,M, ...) \
     if (L >= T) { \
         if (L >= 3) \
@@ -60,7 +60,7 @@ typedef uint_least64_t tarfilesize_t;
 
 tarfilesize_t decode_octal(char* size) {
     tarfilesize_t value = 0;
-    for (int i=0; i<11; i++) {
+    for (int i = 0; i < 11; i++) {
         value = value*8 + (size[i]&7);
     }
     return value;
@@ -75,8 +75,8 @@ int main(int argc, char** argv) {
 
     int c;
 
-    int verbosity=0;
-    int separator='\n';
+    int verbosity = 0;
+    int separator = '\n';
 
     while (1) {
         static struct option long_options[] = {
@@ -107,12 +107,12 @@ int main(int argc, char** argv) {
             break;
 
             case 'Z':
-            separator='\0';
+            separator = '\0';
             LOG_INFO(verbosity, "null separator enabled");
             break;
 
             case 'v':
-            verbosity=max(0, min(5, atoi(optarg)));
+            verbosity = max(0, min(5, atoi(optarg)));
             LOG_INFO(verbosity, "logging level %d enabled", verbosity);
             break;
 
@@ -131,12 +131,12 @@ int main(int argc, char** argv) {
         // when targz_sizes is in *test* mode, set max_filename_blocks
         // very small (2).  This makes it easier to test the case where
         // a long filename would overrun the buffer
-        max_filename_blocks=2;
+        max_filename_blocks = 2;
     } else {
         // normally we set max_filename_blocks large
-        max_filename_blocks=200;
+        max_filename_blocks = 200;
     }
-    LOG_INFO(verbosity, "max_filename_blocks=%d", max_filename_blocks);
+    LOG_INFO(verbosity, "max_filename_blocks = %d", max_filename_blocks);
 
     unsigned char compressed[COMPRESSED_BUFFER];
     unsigned char decompressed[TAR_BLOCK_SIZE];
@@ -212,8 +212,8 @@ int main(int argc, char** argv) {
                 file_size = decode_octal(header.size);
                 // to ensure the filename is 0-terminated somewhere
                 header.somejunk[0] = 0;
-                LOG_DEBUG(verbosity, "read a header block, typeflag='%c', "
-                        "data size=%llu, filename=\"%s\".", header.typeflag,
+                LOG_DEBUG(verbosity, "read a header block, typeflag = '%c', "
+                        "data size = %llu, filename = \"%s\".", header.typeflag,
                         file_size, header.filename);
                 file_blocks = ((file_size + 511) / 512);
                 if (header.typeflag == 'L') {
@@ -225,8 +225,8 @@ int main(int argc, char** argv) {
                         read_blocks = file_blocks = max_filename_blocks;
                         file_size = max_filename_blocks * TAR_BLOCK_SIZE - 1;
                     }
-                    LOG_TEST(verbosity, "read_blocks=%d", read_blocks);
-                    LOG_TEST(verbosity, "skip_blocks=%d", skip_blocks);
+                    LOG_TEST(verbosity, "read_blocks = %d", read_blocks);
+                    LOG_TEST(verbosity, "skip_blocks = %d", skip_blocks);
                 } else {
                     skip_blocks = file_blocks;
                     read_blocks = 0;
@@ -235,7 +235,7 @@ int main(int argc, char** argv) {
 
             if (read_blocks > 0) {
                 gzip_stream.next_out = (unsigned char*) &(
-                        filename_buff[file_blocks-read_blocks]);
+                        filename_buff[file_blocks - read_blocks]);
                 gzip_stream.avail_out = sizeof(tarblock_t);
             } else if (skip_blocks > 0) {
                 gzip_stream.next_out = (unsigned char*) &decompressed;
@@ -246,8 +246,8 @@ int main(int argc, char** argv) {
                 if (header.filename[0] != 0) {
                     if (header.typeflag == 'L') {
                         // ensure the filename_buff is 0-terminated somewhere
-                        filename_buff[max_filename_blocks-1][
-                                TAR_BLOCK_SIZE-1] = 0;
+                        filename_buff[max_filename_blocks - 1][
+                                TAR_BLOCK_SIZE - 1] = 0;
                     } else {
                         if (long_filename[0]) {
                             printf("%lld %s%c",
