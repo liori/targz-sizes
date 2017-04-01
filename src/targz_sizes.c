@@ -140,10 +140,7 @@ int main(int argc, char** argv) {
 
     unsigned char compressed[COMPRESSED_BUFFER];
     unsigned char decompressed[TAR_BLOCK_SIZE];
-    tarblock_t *filename_buff;
-    LOG_INFO(verbosity, "sizeof(tarblock_t)=%d", sizeof(tarblock_t));
-    filename_buff = (tarblock_t*) calloc(
-            max_filename_blocks, sizeof(tarblock_t));
+    unsigned char filename_buff[max_filename_blocks * TAR_BLOCK_SIZE];
     struct tarheader header;
     gz_header gzip_header = {0};
     z_stream gzip_stream = {0};
@@ -162,7 +159,7 @@ int main(int argc, char** argv) {
     int file_blocks = 0;
     int skip_blocks = 0;
     int read_blocks = 0;
-    unsigned char* long_filename = (unsigned char*) filename_buff;
+    unsigned char* long_filename = filename_buff;
     tarfilesize_t file_size = 0;
     int return_code = 0;
     int more_data = 1;
@@ -234,8 +231,8 @@ int main(int argc, char** argv) {
             }
 
             if (read_blocks > 0) {
-                gzip_stream.next_out = (unsigned char*) &(
-                        filename_buff[file_blocks - read_blocks]);
+                gzip_stream.next_out = &(filename_buff[
+                        (file_blocks - read_blocks) * TAR_BLOCK_SIZE]);
                 gzip_stream.avail_out = sizeof(tarblock_t);
             } else if (skip_blocks > 0) {
                 gzip_stream.next_out = (unsigned char*) &decompressed;
@@ -246,8 +243,8 @@ int main(int argc, char** argv) {
                 if (header.filename[0] != 0) {
                     if (header.typeflag == 'L') {
                         // ensure the filename_buff is 0-terminated somewhere
-                        filename_buff[max_filename_blocks - 1][
-                                TAR_BLOCK_SIZE - 1] = 0;
+                        filename_buff[
+                        (max_filename_blocks * TAR_BLOCK_SIZE) - 1] = 0;
                     } else {
                         if (long_filename[0]) {
                             printf("%lld %s%c",
@@ -272,7 +269,6 @@ int main(int argc, char** argv) {
 
     // free resources and make valgrind happy
     inflateEnd(&gzip_stream);
-    free(filename_buff);
 
     return return_code;
 }
