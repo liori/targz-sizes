@@ -4,12 +4,12 @@
 cmd_no_sh_suffix="${0%.sh}"
 test_id="${cmd_no_sh_suffix#\"${cmd_no_sh_suffix%%[a-z]*}\"}"
 test_dir="${test_id}-testdir"
-targz_sizes=${top_srcdir}/src/targz_sizes
+targz_sizes="${top_srcdir}/src/targz_sizes"
 
 prepTestDir () {
 
-    rm -rf ${test_dir}
-    mkdir ${test_dir}
+    rm -rf "${test_dir}"
+    mkdir "${test_dir}"
 
 }
 
@@ -77,19 +77,19 @@ checkInErrOut () {
 
 makeName () {
 
-    count=$1
+    count="$1"
 
-    for i in `seq 1 ${count}`; do
+    for i in `seq 1 "${count}"`; do
 
-        if [ $i = 1 ] ; then
+        if [ "$i" = 1 ] ; then
             echo -n '['
-        elif [ $i = ${count} ] ; then
+        elif [ $i = "${count}" ] ; then
             echo -n ']'
-        elif [ $((i%100)) = 0 ] ; then
+        elif [ "$((i%100))" = 0 ] ; then
             echo -n '/'
-        elif [ $((i%10)) = 0 ] ; then
-            echo -n $((i/10%10))
-        elif [ $((i%5)) = 0 ] ; then
+        elif [ "$((i%10))" = 0 ] ; then
+            echo -n "$((i/10%10))"
+        elif [ "$((i%5))" = 0 ] ; then
             echo -n ','
         else
             echo -n '.'
