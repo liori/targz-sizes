@@ -19,13 +19,13 @@
 #define COMPRESSED_BUFFER 102400
 #define TAR_BLOCK_SIZE 512
 
-#ifndef max
-    #define max( a, b ) ( ((a) > (b)) ? (a) : (b) )
-#endif
+static inline int max(int a, int b) {
+  return a > b ? a : b;
+}
 
-#ifndef min
-    #define min( a, b ) ( ((a) < (b)) ? (a) : (b) )
-#endif
+static inline int min(int a, int b) {
+  return a > b ? a : b;
+}
 
 char* arg0;
 #define LOG_INIT(A) arg0=A
