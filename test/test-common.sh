@@ -13,19 +13,47 @@ prepTestDir () {
 
 }
 
+
+checkCommand () {
+    caller_name="$1"
+    command_line="$2"
+    stdout_file="$3"
+    stderr_file="$4"
+    stdout_redir=
+    stderr_redir=
+
+    if [ "$stdout_file" ] ; then
+        stdout_redir="1> $stdout_file"
+        if [ "$stderr_file" ] ; then
+            stderr_redir="2> $stderr_file"
+        fi
+    fi
+
+    echo "${caller_name}, run command: "${command_line}
+    eval "${command_line}" "${stdout_redir}" "${stderr_redir}"
+    command_result="$?"
+    if [ "${stdout_file}" ] ; then
+        cat "${stdout_file}"
+    fi
+    if [ "${stderr_file}" ] ; then
+        cat "${stderr_file}"
+    fi
+    echo "${caller_name}, command_result=${command_result}"
+    if [ "$command_result" != "0" ] ; then
+        echo "${caller_name}, exiting"
+        exit "$command_result"
+    fi
+}
+
+
 runTest () {
 
-    # run the test
-    echo "runTest(), run command: ${LOG_COMPILER} ${LOG_FLAGS} ${TEST_COMMAND} < ${test_dir}/input.tgz > ${test_dir}/rawout 2> ${test_dir}/rawerr"
-    ${LOG_COMPILER} ${LOG_FLAGS} ${TEST_COMMAND} < ${test_dir}/input.tgz 1> ${test_dir}/rawout 2> ${test_dir}/rawerr 
-    command_result=$?
-    cat ${test_dir}/rawerr ${test_dir}/rawout
-    echo "runTest(), command_result=$command_result"
-    if [ "$command_result" != "0" ] ; then
-        echo "runTest(), exiting"
-        exit $command_result
-    fi
-    cp ${test_dir}/rawout ${test_dir}/output
+    echo "runTest(), entered, test_dir=$test_dir"
+
+    checkCommand "runTest()" "${LOG_COMPILER} ${LOG_FLAGS} ${TEST_COMMAND} < ${test_dir}/input.tgz" "${test_dir}/rawout" "${test_dir}/rawerr"
+
+    cp "${test_dir}/rawout" "${test_dir}/output"
+
 }
 
 checkFilenames () {
@@ -35,15 +63,7 @@ checkFilenames () {
     # create expected result
     tar tzf ${test_dir}/input.tgz | cut -c 1-1023 > ${test_dir}/expout
 
-    echo "checkFilenames(), run diff: diff ${test_dir}/output ${test_dir}/expout"
-    diff ${test_dir}/output ${test_dir}/expout
-    diff_result=$?
-    echo "checkFilenames(), diff_result=$diff_result"
-
-    if [ "$diff_result" != "0" ] ; then
-        echo "checkFilenames(), exiting"
-        exit $diff_result
-    fi
+    checkCommand "checkFilenames()" "diff ${test_dir}/output ${test_dir}/expout"
 }
 
 
@@ -51,16 +71,8 @@ checkInErrOut () {
 
     echo "checkInErrOut(), entered, test_id=$test_dir"
 
-    echo "checkInErrOut(), run egrep: egrep \"$1\" ${test_dir}/rawerr"
-    egrep "$1" ${test_dir}/rawerr
-    egrep_result=$?
+    checkCommand "checkInErrOut()" "egrep \"$1\" ${test_dir}/rawerr"
 
-    echo "checkInErrOut(), egrep_result=$egrep_result"
-
-    if [ "$egrep_result" != "0" ] ; then
-        echo "checkInErrOut(), exiting"
-        exit $egrep_result
-    fi
 }
 
 makeName () {
