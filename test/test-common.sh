@@ -1,7 +1,8 @@
 #!/bin/sh
 # vim: ts=4 sw=4 ts
 
-test_id=$(echo $0 | sed -e 's/^[^a-z]*//' | sed -e 's/.sh$//')
+cmd_no_sh_suffix="${0%.sh}"
+test_id="${cmd_no_sh_suffix#\"${cmd_no_sh_suffix%%[a-z]*}\"}"
 test_dir="${test_id}-testdir"
 targz_sizes=${top_srcdir}/src/targz_sizes
 
