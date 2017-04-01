@@ -30,12 +30,12 @@ static inline int min(int a, int b) {
 char* arg0;
 #define LOG_INIT(A) arg0=A
 #define LOG_MESSAGE(T,N,L,M, ...) \
-    if ( L >= T ) { \
-        if ( L >= 3 ) \
+    if (L >= T) { \
+        if (L >= 3) \
             fprintf(stderr, "[%s] (%s:%d) " M "\n", N, \
-                    __FILE__, __LINE__, ##__VA_ARGS__ ) ; \
+                    __FILE__, __LINE__, ##__VA_ARGS__) ; \
         else \
-            fprintf(stderr, "%s: " M "\n", arg0, ##__VA_ARGS__ ) ; \
+            fprintf(stderr, "%s: " M "\n", arg0, ##__VA_ARGS__) ; \
     }
 
 #define LOG_ERROR(L,M, ...) LOG_MESSAGE(1,"error",L,M,##__VA_ARGS__)
@@ -103,17 +103,17 @@ int main(int argc, char** argv) {
             // pointers, which in the current implementation
             // it is not.
             LOG_ERROR(verbosity, "coding error, getopt_long() should not "
-                    "return '0' based on expected long_options input" );
+                    "return '0' based on expected long_options input");
             break;
 
             case 'Z':
             separator='\0';
-            LOG_INFO(verbosity, "null separator enabled" );
+            LOG_INFO(verbosity, "null separator enabled");
             break;
 
             case 'v':
             verbosity=max(0, min(5, atoi(optarg)));
-            LOG_INFO(verbosity, "logging level %d enabled", verbosity );
+            LOG_INFO(verbosity, "logging level %d enabled", verbosity);
             break;
 
             case '?':
@@ -127,7 +127,7 @@ int main(int argc, char** argv) {
     }
 
     unsigned int max_filename_blocks;
-    if ( LEVEL_IS_TEST( verbosity ) ) {
+    if (LEVEL_IS_TEST(verbosity)) {
         // when targz_sizes is in *test* mode, set max_filename_blocks
         // very small (2).  This makes it easier to test the case where
         // a long filename would overrun the buffer
@@ -136,12 +136,12 @@ int main(int argc, char** argv) {
         // normally we set max_filename_blocks large
         max_filename_blocks=200;
     }
-    LOG_INFO(verbosity, "max_filename_blocks=%d", max_filename_blocks );
+    LOG_INFO(verbosity, "max_filename_blocks=%d", max_filename_blocks);
 
     unsigned char compressed[COMPRESSED_BUFFER];
     unsigned char decompressed[TAR_BLOCK_SIZE];
     tarblock_t *filename_buff;
-    LOG_INFO(verbosity, "sizeof(tarblock_t)=%d", sizeof(tarblock_t) );
+    LOG_INFO(verbosity, "sizeof(tarblock_t)=%d", sizeof(tarblock_t));
     filename_buff = (tarblock_t*) calloc(
             max_filename_blocks, sizeof(tarblock_t));
     struct tarheader header;
@@ -201,11 +201,11 @@ int main(int argc, char** argv) {
         if (gzip_stream.avail_out == 0) {
             if (read_blocks > 0) {
                 // we're inside an extended filename. read the block
-                LOG_DEBUG(verbosity, "read a data block" );
+                LOG_DEBUG(verbosity, "read a data block");
                 read_blocks--;
             } else if (skip_blocks > 0) {
                 // we're inside a file. just ignore the block
-                LOG_DEBUG(verbosity, "skipped a data block" );
+                LOG_DEBUG(verbosity, "skipped a data block");
                 skip_blocks--;
             } else {
                 // we've got a header
@@ -214,10 +214,10 @@ int main(int argc, char** argv) {
                 header.somejunk[0] = 0;
                 LOG_DEBUG(verbosity, "read a header block, typeflag='%c', "
                         "data size=%llu, filename=\"%s\".", header.typeflag,
-                        file_size, header.filename );
+                        file_size, header.filename);
                 file_blocks = ((file_size + 511) / 512);
-                if ( header.typeflag == 'L') {
-                    if ( file_blocks < max_filename_blocks ) {
+                if (header.typeflag == 'L') {
+                    if (file_blocks < max_filename_blocks) {
                         skip_blocks = 0;
                         read_blocks = file_blocks;
                     } else {
@@ -225,8 +225,8 @@ int main(int argc, char** argv) {
                         read_blocks = file_blocks = max_filename_blocks;
                         file_size = max_filename_blocks * TAR_BLOCK_SIZE - 1;
                     }
-                    LOG_TEST(verbosity, "read_blocks=%d", read_blocks );
-                    LOG_TEST(verbosity, "skip_blocks=%d", skip_blocks );
+                    LOG_TEST(verbosity, "read_blocks=%d", read_blocks);
+                    LOG_TEST(verbosity, "skip_blocks=%d", skip_blocks);
                 } else {
                     skip_blocks = file_blocks;
                     read_blocks = 0;
@@ -249,7 +249,7 @@ int main(int argc, char** argv) {
                         filename_buff[max_filename_blocks-1][
                                 TAR_BLOCK_SIZE-1] = 0;
                     } else {
-                        if ( long_filename[0] ) {
+                        if (long_filename[0]) {
                             printf("%lld %s%c",
                                 gzip_stream.total_in - start_of_last_header,
                                 long_filename, separator);
