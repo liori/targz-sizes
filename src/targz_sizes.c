@@ -140,7 +140,7 @@ int main(int argc, char** argv) {
 
     unsigned char compressed[COMPRESSED_BUFFER];
     unsigned char decompressed[TAR_BLOCK_SIZE];
-    unsigned char filename_buff[max_filename_blocks * TAR_BLOCK_SIZE];
+    char filename_buff[max_filename_blocks * TAR_BLOCK_SIZE];
     struct tarheader header;
     gz_header gzip_header = {0};
     z_stream gzip_stream = {0};
@@ -159,7 +159,7 @@ int main(int argc, char** argv) {
     int file_blocks = 0;
     int skip_blocks = 0;
     int read_blocks = 0;
-    unsigned char* long_filename = filename_buff;
+    char* long_filename = filename_buff;
     tarfilesize_t file_size = 0;
     int return_code = 0;
     int more_data = 1;
@@ -231,7 +231,7 @@ int main(int argc, char** argv) {
             }
 
             if (read_blocks > 0) {
-                gzip_stream.next_out = &(filename_buff[
+                gzip_stream.next_out = (unsigned char*) &(filename_buff[
                         (file_blocks - read_blocks) * TAR_BLOCK_SIZE]);
                 gzip_stream.avail_out = sizeof(tarblock_t);
             } else if (skip_blocks > 0) {
