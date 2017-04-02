@@ -7,6 +7,7 @@ Makefile
 Makefile.in
 aclocal.m4
 autom4te.cache
+compile
 config.guess
 config.log
 config.status
@@ -18,7 +19,12 @@ missing
 src/.deps
 src/Makefile
 src/Makefile.in
+test-driver
 
 build-aux
 src/targz_sizes
 src/targz_sizes.o
+
+*.log
+*.trs
+*-testdir

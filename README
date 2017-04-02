@@ -15,11 +15,40 @@ little space in archives compared to live file system) and incremental backups
 performs only basic data gathering, you will need something to provide proper
 statistics though.
 
+Install
+-------
+
+    targz_sizes uses autotools to build on linux. Here is the four-step build
+    procedure.
+
+    1.  autoreconf -i
+    2.  ./configure
+    3.  make
+    4.  make install
+
+Test
+----
+
+    targz_sizes can be unit tested using a series of automated tests, executed
+    as follows
+
+    1. make check
+
+Valgrind
+--------
+
+    targz_sizes unit tests can be analysed with Valgrind, if Valgrind is
+    installed in your environment, as follows
+
+    1. make check-valgrind
+
+    For more information, see the documentation for ax_valgrind_check.m4.
+
 Usage
 -----
 
-No options are implemented. The archive file is taken on standard input,
-file sizes are printed on standard output. E.g.:
+The archive file is taken on standard input, file sizes are printed on standard
+output. E.g.:
 
     targz_sizes <my_archive.tar.gz >file_sizes.txt
 
@@ -38,6 +67,17 @@ Note that directory entries also take up space in the archive! Also note that
 technically a file can be encoded by any number of bits, not necessarily being
 round number of bytes. In such cases, amount of space shown in the output is
 approximate.
+
+Options
+-------
+
+    -v, --log-level LEVEL
+        level of log output from 0 (none; default) to 4 (debug), with level 5
+	(test), changing program behaviour to support testing.
+
+    -Z, --null
+        names of files in output, are null-terminated.  By default, names of
+        files are newline terminated.
 
 Known problems
 --------------
@@ -63,8 +103,9 @@ if you want to fix them.
 Archive file names are not re-encoded to current locale. You can use `iconv`
 for that.
 
-Archive file names are truncated to 100 characters (the limit for original tar
-specification). There are format extensions which can cope with longer names,
-but those are not supported by targz_sizes. The output will contain the names
-as they appear in the 100-byte field in the header, most probably simply
-truncated.
+Archive file names may be truncated to 100 characters (the limit for original
+tar specification). There are format extensions which can cope with longer
+names.  The format extension supported by targz_sizes is GNUTYPE_LONGNAME,
+indicated by 'L' in the typeflag field. The output of long names, encoded in
+other format extensions, will contain the names as they appear in the 100-byte
+field in the header, most probably simply truncated.
