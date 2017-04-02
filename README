@@ -102,3 +102,10 @@ if you want to fix them.
 
 Archive file names are not re-encoded to current locale. You can use `iconv`
 for that.
+
+Archive file names may be truncated to 100 characters (the limit for original
+tar specification). There are format extensions which can cope with longer
+names.  The format extension supported by targz_sizes is GNUTYPE_LONGNAME,
+indicated by 'L' in the typeflag field. The output of long names, encoded in
+other format extensions, will contain the names as they appear in the 100-byte
+field in the header, most probably simply truncated.
